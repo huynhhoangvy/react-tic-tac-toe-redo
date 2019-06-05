@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import FacebookLogin from "react-facebook-login";
 import GoogleLogin from 'react-google-login';
 
 
@@ -9,7 +8,7 @@ const Square = (props) => {
     return (
         <button 
         className="square"
-        onClick={props.onClick} //why is () gone
+        onClick={props.onClick}
         >
             {props.value}
         </button>
@@ -66,31 +65,27 @@ class Board extends React.Component {
     }
   
     async fetchData () {
-      const url = "http://ftw-highscores.herokuapp.com/tictactoe-dev";
+      const url = "http://ftw-highscores.herokuapp.com/tictactoe-dev/";
       let response = await fetch(url);
       let data = await response.json();
       this.setState({
         highScores: data.items
       })
-      console.log(this.state.highScores, "lelelelelelle")
     }
     
     renderHighScore() {
-      console.log("rendering high scores", typeof(this.state.highScores))
-      return (
-      <h1>aaaaaaaaa</h1>
-      )
-      
-      // return this.state.highScores.map
+      return (this.state.highScores.map( (x) => {
+        return (
+          <li key={x._id}>Player {x.player} scores {x.score}</li>
+        )
+      }))
     }
     
   render() {
-    // const status = 'Next player: ' + (this.state.xIsNext ? "X" : "O");
     const winner = calculateWinner(this.state.squares, this.props.name, this.props.timer, this.props.startTime);
     let status, elapsedTime;
     if (winner) {
         status = winner;
-        console.log(this.props.starttime)
         elapsedTime = Math.floor((Date.now() - this.props.startTime)/1000)
         this.postData(this.props.name, elapsedTime)
     } else {
@@ -116,7 +111,7 @@ class Board extends React.Component {
           {this.renderSquare(7)}
           {this.renderSquare(8)}
         </div>
-        <ul>
+        <ul><h3>Leaderboard</h3>
           {this.renderHighScore()}
         </ul>
       </div>
@@ -134,22 +129,12 @@ class Game extends React.Component {
     }
   }
 
-  componentDidMount() {
-    // setInterval(() => this.setState({ timer: Math.floor((Date.now() - this.state.startTime)/1000) }))
-    // setInterval(() => this.setState({ timer: this.state.timer + 1 }),1000)
-
-  }
   responseGoogle = (response) => {
-    console.log(response);
-    // if (response.code === 200) {
-
-    // }
     this.setState({
       isLoggedIn: true,
       name: response.w3.ofa,
       startTime: Date.now(),
-
-    }, () => console.log(this.state))
+    })
   }
 
   render() {
@@ -161,7 +146,7 @@ class Game extends React.Component {
           { this.state.isLoggedIn && 
           <div>
             <Board name={this.state.name} timer={this.state.timer} startTime={this.state.startTime} /> 
-            <p>Player: {this.state.name}</p>
+          <p>Player: {this.state.name}</p>
           </div> }
         </div>
         {this.state.isLoggedIn && 
@@ -191,8 +176,7 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
-function calculateWinner(squares, name, timer, startTime) {
-  console.log("log this squares", squares)
+function calculateWinner(squares) {
   if (squares.every(square => square !== null)) {
     return "DRAW"
   }
@@ -209,21 +193,9 @@ function calculateWinner(squares, name, timer, startTime) {
     for (let i = 0; i < winCases.length; i++) {
         const [a,b,c] = winCases[i];
         if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-          console.log("is this triggered????", name,)
           return "Winner is: " + squares[a];
         }
     }
     return null;
 }
 
-{/* <FacebookLogin
-  autoLoad={true}
-  appId="1088597931155576"
-  fields="name,email,picture"
-  callback={(resp) => this.responseFacebook(resp)}
-/>
-<GoogleLogin
-    clientId="344739454450-js8adhd3b4cv0hvvfba9ee84v7ilatps.apps.googleusercontent.com"
-    buttonText="Login"
-    cookiePolicy={'single_host_origin'}
-/> */}
