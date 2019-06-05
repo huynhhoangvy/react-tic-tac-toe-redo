@@ -6,64 +6,36 @@ import GoogleLogin from 'react-google-login';
 
 const Square = (props) => {
     return (
-        <button 
-        className="square"
-        onClick={props.onClick}
-        >
-            {props.value}
-        </button>
+      <button 
+      className="square"
+      onClick={props.onClick}
+      >
+        {props.value}
+      </button>
     )
 }
 
 class Board extends React.Component {
     constructor(props) {
-        super(props)
-        this.state = ({
-            squares: Array(9).fill(null),
-            xIsNext: true,
-            highScores: [],
-        })
+      super(props)
+      this.state = ({
+        highScores: [],
+      })
     }
+    
     renderSquare(i) {
-        return <Square 
-        value={this.state.squares[i]}
-        onClick={() => this.handleClick(i)}
-        />;
+      return (
+        <Square 
+      value={this.props.squares[i]}
+      onClick={() => this.props.onClick(i)}
+      />
+      );
   }
-
-    handleClick(i) {
-        const squares = this.state.squares.slice();
-        if(calculateWinner(squares) || squares[i]) {
-            return;
-        }
-        squares[i] = this.state.xIsNext ? "X" : "O";
-        this.setState({
-          squares: squares,
-          xIsNext: !this.state.xIsNext,
-        });
-      }
 
       componentDidMount() {
         this.fetchData()
       }
       
-     postData = async (name, elapsedTime) => {
-      let data = new URLSearchParams();
-      data.append('player', name);
-      data.append('score', 100 - elapsedTime);
-      const url = `http://ftw-highscores.herokuapp.com/tictactoe-dev`;
-      const response = await fetch(url,
-        {
-          method: 'POST',
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: data.toString(),
-          json: true,
-        }
-      );
-    }
-  
     async fetchData () {
       const url = "http://ftw-highscores.herokuapp.com/tictactoe-dev/";
       let response = await fetch(url);
@@ -76,26 +48,15 @@ class Board extends React.Component {
     renderHighScore() {
       return (this.state.highScores.map( (x) => {
         return (
-          <li key={x._id}>Player {x.player} scores {x.score}</li>
+          <li key={x._id}>{x.player} scores {x.score} points.</li>
         )
       }))
     }
     
   render() {
-    const winner = calculateWinner(this.state.squares, this.props.name, this.props.timer, this.props.startTime);
-    let status, elapsedTime;
-    if (winner) {
-        status = winner;
-        elapsedTime = Math.floor((Date.now() - this.props.startTime)/1000)
-        this.postData(this.props.name, elapsedTime)
-    } else {
-        status = " Next player: " + (this.state.xIsNext ? "X" : "O")
-    }
 
     return (
       <div>
-        <div className="status">{status}</div>
-        {elapsedTime !== undefined && <p>{"Elapsed Time: " + elapsedTime + " seconds"}</p>}
         <div className="board-row">
           {this.renderSquare(0)}
           {this.renderSquare(1)}
@@ -111,7 +72,7 @@ class Board extends React.Component {
           {this.renderSquare(7)}
           {this.renderSquare(8)}
         </div>
-        <ul><h3>Leaderboard</h3>
+        <ul><h3>LOW SCORES</h3>
           {this.renderHighScore()}
         </ul>
       </div>
@@ -126,6 +87,11 @@ class Game extends React.Component {
       isLoggedIn: false,
       timer: 0,
       startTime: 0,
+      history: [{
+        squares: Array(9).fill(null)
+      }],
+      stepNumber: 0,
+      xIsNext: true,
     }
   }
 
@@ -137,23 +103,94 @@ class Game extends React.Component {
     })
   }
 
+  handleClick(i) {
+    const history = this.state.history.slice(0, this.state.stepNumber + 1);
+    const currentHistory = history[history.length - 1]; 
+    const squares = currentHistory.squares.slice();
+    if(calculateWinner(squares) || squares[i]) {
+      return;
+    }
+    squares[i] = this.state.xIsNext ? "X" : "O";
+    this.setState({
+      history: history.concat([{   
+        squares: squares,          
+      }]),
+      stepNumber: history.length,
+      xIsNext: !this.state.xIsNext,
+    });
+    }
+
+  jumpTo(step) {
+    this.setState({
+      stepNumber: step,
+      xIsNext: (step % 2) === 0,
+    })
+  }
+
+  postData = async (name, elapsedTime) => {
+    let data = new URLSearchParams();
+    data.append('player', name);
+    data.append('score', 100 - elapsedTime);
+    const url = `http://ftw-highscores.herokuapp.com/tictactoe-dev`;
+    const response = await fetch(url,
+      {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: data.toString(),
+        json: true,
+      }
+    );
+  }
+  
   render() {
+    const history = this.state.history;
+    const currentHistory = history[this.state.stepNumber];
+    const winner = calculateWinner(currentHistory.squares);
+
+    const move  = history.map((step, move) => { // why move seems to equal index???
+      const desc = move ? 
+      "Go to move #" + move:
+      "Go to move game start";
+      
+      return (
+        <li key={move}>
+          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+        </li>
+      );
+    });
+
+    let status, elapsedTime;
+    if (winner) {
+      status = "Winner: " + winner;
+      elapsedTime = "Elapsed time: " + Math.floor((Date.now() - this.state.startTime)/1000) + " seconds";
+      this.postData(this.state.name, elapsedTime)
+    } else {
+      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    }
+
     return (
       <div className="game">
-        
-        
         <div className="game-board">
           { this.state.isLoggedIn && 
           <div>
-            <Board name={this.state.name} timer={this.state.timer} startTime={this.state.startTime} /> 
-          <p>Player: {this.state.name}</p>
+            <Board 
+            name = {this.state.name} 
+            timer = {this.state.timer} 
+            startTime = {this.state.startTime}
+            squares = {currentHistory.squares}
+            onClick = {(i) => this.handleClick(i)} 
+            /> 
           </div> }
         </div>
-        {this.state.isLoggedIn && 
-          <div className="game-info">
-            <div>{/* status */}</div>
-            <ol>{/* TODO */}</ol>
-          </div>
+      {this.state.isLoggedIn && 
+        <div className="game-info">
+          <h1>Welcome to Tic Tac Toe, {this.state.name}</h1>
+          <h3>{status}</h3>
+          <h3>{elapsedTime}</h3>
+          <ol>{move}</ol>
+        </div>
         }
         {!this.state.isLoggedIn && 
         <GoogleLogin
@@ -193,7 +230,7 @@ function calculateWinner(squares) {
     for (let i = 0; i < winCases.length; i++) {
         const [a,b,c] = winCases[i];
         if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-          return "Winner is: " + squares[a];
+          return squares[a];
         }
     }
     return null;
