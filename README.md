@@ -1,6 +1,29 @@
+# React Tic Tac Toe 
+
+Created with effort by : Vy
+
 ## View As
 
 https://vy-react-tic-tac-toe.netlify.com/
+
+
+## The following **Milestones** are completed:
+
+* [x] Pass the components data through props.
+* [x] Storing Value with State.
+* [x] Implement X/O turn and Figure Out the Winner.
+* [x] Prompt user correctly depending on the state of the game.
+* [x] Create correct user state.
+* [x] Hook up a high score.
+* [x] Display High Scores.
+
+## The following **Bonus** are implemented:
+
+* [x] Implement Time Travel Feature.
+
+## Time Spent
+
+Time spent: **6** hours spent in total.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -70,3 +93,19 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### `npm run build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+
+## License
+
+    Copyright [2019] [huynh.h.vy@gmail.com]
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
