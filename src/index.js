@@ -8,7 +8,7 @@ const Square = (props) => {
     return (
       <button 
       className="square"
-      onClick={props.onClick}
+      onClick={ .onClick}
       >
         {props.value}
       </button>
@@ -37,7 +37,7 @@ class Board extends React.Component {
       }
       
     async fetchData () {
-      const url = "http://ftw-highscores.herokuapp.com/tictactoe-dev/";
+      const url = "https://ftw-highscores.herokuapp.com/tictactoe-dev/";
       let response = await fetch(url);
       let data = await response.json();
       this.setState({
@@ -131,7 +131,7 @@ class Game extends React.Component {
     let data = new URLSearchParams();
     data.append('player', name);
     data.append('score', 100 - elapsedTime);
-    const url = `http://ftw-highscores.herokuapp.com/tictactoe-dev`;
+    const url = `https://ftw-highscores.herokuapp.com/tictactoe-dev`;
     const response = await fetch(url,
       {
         method: 'POST',
