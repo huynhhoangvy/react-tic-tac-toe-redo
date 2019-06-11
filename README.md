@@ -10,6 +10,8 @@ Codes works on local computer but runs into error when deploying to Netlify.
 
 ![alt text](https://i.imgur.com/a6fIMKw.png)
 
+Update: new error "POST http://ftw-highscores.herokuapp.com/tictactoe-dev 500 (Internal Server Error)"
+
 ## The following **Milestones** are completed:
 
 * [x] Pass the components data through props.
