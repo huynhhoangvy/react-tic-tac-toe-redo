@@ -4,13 +4,7 @@ Created with effort by : Vy
 
 ## View As
 
-~~https://vy-react-tic-tac-toe.netlify.com/~~
-
-Codes works on local computer but runs into error when deploying to Netlify.
-
-![alt text](https://i.imgur.com/a6fIMKw.png)
-
-Update: new error "POST http://ftw-highscores.herokuapp.com/tictactoe-dev 500 (Internal Server Error)"
+https://vy-react-tic-tac-toe.netlify.com/
 
 ## The following **Milestones** are completed:
 
